@@ -22,25 +22,21 @@ def questions(evidence:pd.DataFrame)->pd.DataFrame:
 
 
 def themes(evidence:pd.DataFrame)->pd.DataFrame:
-    relevant=evidence[evidence.relevance.isin(['DIRECT','RELATED'])]
     rows=[]
     for f in FINDINGS:
-        subset=relevant[relevant.record_id.isin(f['ids'])]
-        rows.append({'theme':f['title'],'evidence_count':len(subset),
-                     'rich_count':int(subset.evidence_depth.isin(['E1','E2']).sum()),
-                     'source_count':subset.source_platform.nunique(),
-                     'source_distribution':' | '.join(subset.source_platform.value_counts().index),
-                     'record_ids':'|'.join(subset.record_id),
+        rows.append({'theme':f['title'],'evidence_count':len(f['supporting_ids']),
+                     'rich_count':0,'source_count':0,'source_distribution':'Source-neutral Retrieval Cases',
+                     'record_ids':'|'.join(f['supporting_ids']),
                      'definition':f['observed']+' Possible interpretation: '+f['mechanism'],
-                     'contradictions':f['qualification'],'research_gap':f['question']})
+                     'contradictions':' | '.join(f['contradictory_ids']),'research_gap':f['question']})
     return pd.DataFrame(rows)
 
 
 def hypotheses(theme_df:pd.DataFrame)->pd.DataFrame:
     rows=[]
     for f in FINDINGS:
-        rows.append({'hypothesis_id':f['id'],'theme':f['title'],'status':f['status'],
-                     'statement':f['mechanism'],'supporting_ids':'|'.join(f['ids']),
-                     'contradictory_evidence':f['qualification'],
+        rows.append({'hypothesis_id':f['id'],'theme':f['title'],'status':'Directional / requires validation',
+                     'statement':f['mechanism'],'supporting_ids':'|'.join(f['supporting_ids']),
+                     'contradictory_evidence':'|'.join(f['contradictory_ids']),
                      'interview_question':f['question'],'potential_outcome':f['metric']})
     return pd.DataFrame(rows)

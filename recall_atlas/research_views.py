@@ -1,113 +1,33 @@
-"""Editorial layer grounded in the fixed 24-record source snapshot.
+"""Editorial synthesis for the consolidated, source-neutral Retrieval Cases dataset.
 
-Statements below are *directions to investigate*, not product telemetry, proof
-of causality, or independent verification. IDs are validated against SQLite.
+Editorial Q&A in the workbook is used as a research-planning aid only. It is
+not presented as an interview transcript or counted as a retrieval episode.
 """
 from __future__ import annotations
+import pandas as pd
 
 FINDINGS = [
-    {
-        'id': 'C1', 'chart_label': 'Collection context / scope', 'title': 'Remembering the collection does not always narrow the search',
-        'short': 'Users describe a known album, group or period, yet report being unable to use that context to narrow the task.',
-        'episode': 'One user wanted campfire photographs from a particular programme, not every campfire in the library.',
-        'observed': 'A broad object search and extra descriptions reportedly did not isolate the intended group of images.',
-        'mechanism': 'Possible mismatch between retained collection context and the available search scope; search mode and indexing remain unverified.',
-        'qualification': 'Another user reported success by combining an album title with a term; browser Find also worked for an album-navigation task.',
-        'question': 'When the person knows an album or event, what do they try first, and can they successfully constrain the retrieval space?',
-        'ids': ['community-495705', 'community-78574873', 'community-128230954', 'community-162522212', 'reddit-1g5dmve', 'reddit-1aju75m'],
-        'counter_ids': ['community-128230954', 'community-162522212'],
-        'metric': 'Verified retrieval success and time to target in known-collection tasks.',
-        'status': 'Directional / not validated',
-    },
-    {
-        'id': 'C2', 'chart_label': 'Literal text vs semantic results', 'title': 'Remembered text can be interpreted as a broad semantic cue',
-        'short': 'A remembered filename fragment or screenshot word does not necessarily behave like a literal text match.',
-        'episode': 'A screenshot search for the word “dinner” initially returned thematically related screenshots rather than the intended text match.',
-        'observed': 'The poster reported that quoting the text in a reformulated query worked; a filename query elsewhere returned date-level results.',
-        'mechanism': 'A possible expectation gap between literal text/filename matching and semantic retrieval, not proof of a model defect.',
-        'qualification': 'The successful quoted-text workaround shows that an existing capability may already address part of this need.',
-        'question': 'When someone recalls exact text, do they expect literal matching, know about quoting, and find the correct result?',
-        'ids': ['community-106429666', 'reddit-rd8u2q', 'reddit-1i06lg2', 'reddit-1iaob2b', 'reddit-1lklsk2'],
-        'counter_ids': ['reddit-1i06lg2'],
-        'metric': 'Verified screenshot/document retrieval; queries and refinements per successful target.',
-        'status': 'Directional / not validated',
-    },
-    {
-        'id': 'C3', 'chart_label': 'Candidate → nearby photos', 'title': 'A useful candidate may not end the retrieval journey',
-        'short': 'Some users describe looking for neighbouring photos by day or rough period after an imperfect search.',
-        'episode': 'A poster wanted to jump from a found candidate directly to the surrounding photos from the same day.',
-        'observed': 'Another described estimating month and year, then manually browsing; no target success was independently verified.',
-        'mechanism': 'Possible handoff friction between result inspection and contextual timeline browsing.',
-        'qualification': 'Chronological browsing is an available workaround; the records do not show that a new day view would improve success.',
-        'question': 'When someone sees a near match, what makes them think the target is nearby, and where do they navigate next?',
-        'ids': ['reddit-1h09vho', 'reddit-1fmvxd6'],
-        'counter_ids': ['reddit-1fmvxd6'],
-        'metric': 'Time from first useful candidate to verified target; abandonment after a near miss.',
-        'status': 'Emerging / not validated',
-    },
-    {
-        'id': 'C4', 'chart_label': 'Sparse / irrelevant results', 'title': 'Reports of missing or irrelevant results need diagnosis',
-        'short': 'Search complaints describe sparse, irrelevant or missing results, but the underlying failure cannot be identified from text alone.',
-        'episode': 'A long-term dog-photo owner reported that an object search returned only a small subset of images.',
-        'observed': 'Other participants reported different behaviour and raised backup/account state as possible explanations.',
-        'mechanism': 'Potential index, account, availability, query-interpretation or relevance issue; cause unknown.',
-        'qualification': 'These reports cannot establish that the target existed in the searched account or that the index failed.',
-        'question': 'Can the participant verify the asset exists, show the account and interface state, and reproduce the mismatch?',
-        'ids': ['reddit-1fa4fg1', 'reddit-1ov9y8d', 'reddit-193u8s0', 'reddit-1iaob2b', 'community-400823549'],
-        'counter_ids': ['reddit-1ov9y8d', 'reddit-1i06lg2'],
-        'metric': 'Confirmed asset presence and verified success after a diagnostic step.',
-        'status': 'Needs diagnosis / not validated',
-    },
+ {"id":"F1","title":"Context and relationships are often remembered but weakly expressed in the first search","observed":"Cases describe a distinctive family object, a pet, a trip, an event, a place category, or a remembered period rather than a single object word.","mechanism":"Possible mismatch between relational or temporal memory and the cues people choose or can apply in search.","supporting_ids":["S01","C08","S08","S10","S12","S13"],"contradictory_ids":["S03","S05"],"opportunity":"Test context-led starting points that let people express event, relationship, period, and collection clues together.","question":"When people know an event or relationship, which clues do they expect to combine and which do they omit?","metric":"Verified target retrieval rate, time to target, and clue coverage."},
+ {"id":"F2","title":"Related-image retrieval is an explicit but unvalidated need","observed":"One case asks whether a newer photograph of a distinctive object can locate an older one, and another seeks a visually specific plant image.","mechanism":"People may hold a visual reference when they lack a name, date, or usable text clue.","supporting_ids":["S01","S13"],"contradictory_ids":["S03","S05"],"opportunity":"Compare reference-image-assisted retrieval with text and timeline routes before assuming a new capability is needed.","question":"Does a reference image improve retrieval over the best existing query and browsing path?","metric":"First-candidate relevance and verified success by retrieval route."},
+ {"id":"F3","title":"Exact text and screenshot retrieval can diverge from people’s expectations","observed":"Cases describe literal screenshot text returning broad associations, inconsistent visible-word retrieval, and document-text results changing over time.","mechanism":"A possible gap between expected literal matching, indexing state, and ranked results. The evidence does not diagnose the cause.","supporting_ids":["C20","C18","C07","S15"],"contradictory_ids":["C20"],"opportunity":"Test clearer literal-text refinement, result explanation, and text-specific search guidance against the current experience.","question":"When exact text is remembered, do people recognize and successfully use the available literal-text path?","metric":"Screenshot or document retrieval success, reformulations per task, and confidence in result meaning."},
+ {"id":"F4","title":"A useful candidate may not provide a smooth path to the surrounding timeline","observed":"Cases report scrolling through a remembered period, finding one vacation day but not adjacent dates, and wanting chronological results after an irrelevant result set.","mechanism":"Candidate inspection may not connect clearly to nearby photos, dates, or trip context.","supporting_ids":["C08","S08","S09","S14"],"contradictory_ids":["S03"],"opportunity":"Compare candidate-to-date and candidate-to-nearby-photo navigation with ordinary chronological browsing.","question":"After a near match, where do people expect to go next and can they reach that context without restarting?","metric":"Time from first useful candidate to verified target and near-miss abandonment."},
+ {"id":"F5","title":"Query reformulation helps in some cases but can become high effort","observed":"Cases show multiple clue variants, quoted text, alternative result ordering, copies, and switching search modes.","mechanism":"People may lack feedback about whether a query is too broad, interpreted differently, or constrained by asset availability.","supporting_ids":["C08","C20","S07","C18","S20"],"contradictory_ids":["S03","S05"],"opportunity":"Test lightweight reformulation guidance and route comparison rather than presuming an automatic query rewrite.","question":"Which feedback changes the next action without increasing unproductive query loops?","metric":"Queries or refinements per verified success and task completion time."},
+ {"id":"F6","title":"Recognition and verification are under-recorded","observed":"Some accounts report finding a result, while many unresolved accounts do not establish whether the intended asset existed, appeared, or was recognized.","mechanism":"The record usually omits the candidate set, asset state, and the cues used to confirm a match.","supporting_ids":["C08","S03","S06","S08"],"contradictory_ids":["S10","S13"],"opportunity":"Instrument or observe target confirmation before interpreting a search complaint as a retrieval-model failure.","question":"How do people decide a candidate is the correct photo, and what evidence do they use?","metric":"Observed target verification rate and false-positive candidate selection."},
+ {"id":"F7","title":"Successful workarounds reveal competing intervention directions","observed":"Reported workarounds include chronology browsing, exact-text reformulation, saving a copy, device or folder checks, and switching search modes.","mechanism":"A workaround can signal discoverability, navigation, availability, or result-interpretation friction; it does not prove a missing feature.","supporting_ids":["C08","C20","S07","S17","S19","S20"],"contradictory_ids":["S10","S12"],"opportunity":"Test guidance, diagnostic, navigation, and retrieval-assist interventions side by side rather than preselecting an MVP.","question":"Which workaround is fastest, understandable, and reliable for a consented retrieval task?","metric":"Verified recovery rate, route-switch rate, and perceived effort."},
 ]
 
-# Research questions use intentionally narrow evidence mappings. Missing information
-# is shown as a gap, not automatically attributed to every relevant record.
 QUESTIONS = [
-    ('Memory', 'What kinds of old photos and visual assets do users struggle to retrieve?', 'The sample contains ordinary photos, album-contained images and screenshot/document searches; it does not establish population frequencies.', ['community-495705','reddit-1aju75m','reddit-1iaob2b','reddit-193u8s0']),
-    ('Memory', 'What information do users actually remember?', 'Some explicitly recall an album, a group/programme, an approximate period, a filename or on-screen text.', ['reddit-1aju75m','community-78574873','reddit-1fmvxd6','reddit-1i06lg2']),
-    ('Memory', 'What information have they forgotten?', 'The corpus does not consistently record forgotten clues; ask this directly during observed retrieval tasks.', []),
-    ('Query', 'How do users formulate an initial search with incomplete memory?', 'Cases mention an object, filename, album title, approximate time or screenshot text, but exact initial query strings are often missing.', ['reddit-rd8u2q','reddit-1fmvxd6','community-78574873','reddit-1i06lg2']),
-    ('Query', 'Which remembered clues are omitted from the initial query?', 'The records generally do not establish all remembered clues before searching, so omissions cannot be reliably measured.', []),
-    ('Memory', 'Do memory types lead to different retrieval behaviour?', 'The corpus contains different approaches but is too small and self-selected for a comparative behaviour claim.', ['reddit-1fmvxd6','reddit-1g5dmve','reddit-1i06lg2']),
-    ('Journey', 'Where does the retrieval journey break down?', 'Observed reports include broad candidates, failure to scope to a collection, and difficulty moving from a result to surrounding images.', ['reddit-rd8u2q','reddit-1g5dmve','reddit-1h09vho']),
-    ('Journey', 'What happens after the first unsuccessful attempt?', 'Some users describe manual timeline browsing, additional query variants, or category/album workarounds; outcomes are mostly not stated.', ['reddit-1fmvxd6','reddit-rd8u2q','community-162522212']),
-    ('Query', 'How do users refine or reformulate searches?', 'One screenshot-text poster reports a successful quoted-text refinement; others describe multiple unsuccessful variants.', ['reddit-1i06lg2','reddit-rd8u2q','reddit-1jbiao1']),
-    ('Query', 'Which refinements help, fail or loop?', 'The reported quoted-text and browser-Find workarounds succeeded locally; repeated search variants elsewhere did not. This is not controlled comparison.', ['reddit-1i06lg2','community-162522212','reddit-rd8u2q']),
-    ('Journey', 'Why do users fail when candidate results appear?', 'Candidate recognition itself is not established. Some records describe broad results or a desire to navigate to nearby photos.', ['reddit-rd8u2q','reddit-1h09vho']),
-    ('Journey', 'What enables confirmation of the correct photo?', 'Independently verified target recognition is not measured in public posts.', []),
-    ('Workarounds', 'What external workarounds do users employ?', 'Reported alternatives include browser Find, album-title-plus-term search, timeline browsing and metadata/folder filters.', ['community-162522212','community-128230954','reddit-1fmvxd6','pixls-39727']),
-    ('Workarounds', 'What do successful workarounds reveal?', 'Quoted text, browser Find and correcting folder scope suggest opportunities to examine discoverability and scope, not new-capability absence.', ['reddit-1i06lg2','community-162522212','pixls-39727']),
-    ('Opportunity', 'Which mechanisms recur across independent sources?', 'Known collection/scope and text-query issues appear in more than one source; records remain purposively sampled.', ['community-495705','reddit-1g5dmve','community-106429666','reddit-1i06lg2']),
-    ('Opportunity', 'Which findings could reflect source-selection bias?', 'Search terms and source accessibility purposively enriched the dataset for retrieval complaints; rates are not representative.', ['community-495705','reddit-1g5dmve']),
-    ('Opportunity', 'Which existing capabilities address observed problems?', 'Public posts mention quoted text, browser Find, album-title-plus-term and category navigation; confirm current official availability by platform.', ['reddit-1i06lg2','community-128230954','community-162522212']),
-    ('Opportunity', 'Which gaps might remain despite those capabilities?', 'Some posters still report a burden applying collection context or interpreting literal versus semantic matches; reproduce before claiming a product gap.', ['reddit-1aju75m','community-78574873','community-106429666']),
-    ('Opportunity', 'Which findings are contradicted?', 'Success reports for quoted text and album navigation qualify claims that no workable retrieval paths exist.', ['reddit-1i06lg2','community-128230954','community-162522212']),
-    ('Opportunity', 'What can public feedback not establish?', 'Root cause, prevalence, asset presence, actual candidate sets and independently verified success require primary research.', []),
-    ('Opportunity', 'Which opportunities might improve verified retrieval?', 'Collection-scoped discovery, literal-text expectations and candidate-to-context navigation are hypotheses to evaluate with observed tasks.', ['reddit-1aju75m','reddit-1i06lg2','reddit-1h09vho']),
-    ('Opportunity', 'Which problems are feasible to reproduce in an MVP?', 'Constrained collection lookup and screenshot-text tasks can be prototyped with consented/representative assets; user validation is pending.', ['community-495705','reddit-1i06lg2']),
+ ("Memory","Which contextual, relational, temporal, text, and visual clues are remembered before search?","The consolidated cases contain each clue type, but not a representative frequency.",["S01","C08","C20","S08"]),
+ ("Journey","Which stage fails first: query formulation, result interpretation, context navigation, or asset availability?","The recorded accounts suggest several stages; direct observation is required to diagnose a specific mechanism.",["C20","S08","S18","S19"]),
+ ("Workarounds","Which workarounds reach a verified target with acceptable effort?","Several routes are reported, but most outcomes are self-reported and not independently observed.",["C08","C20","S07","S20"]),
+ ("Validation","What must be checked before calling a retrieval task a product failure?","Confirm target existence, account and backup state, query route, candidate set, and recognition of the target.",["S18","S19","S10"]),
 ]
 
+def evidence_for(finding:dict, records:pd.DataFrame)->pd.DataFrame:
+ return records[records.case_id.isin(finding['supporting_ids'])]
 
-# Source-reported outcomes are described independently from coarse automated labels.
-# Do not interpret a successful workaround as independently verified target retrieval.
-OUTCOME_NOTES = {
-    'reddit-rd8u2q': 'Reported failure to find target through filename-query variants; final retrieval not verified.',
-    'reddit-1jbiao1': 'Reported unsuccessful search using multiple parameters; no observed target verification.',
-    'reddit-1aju75m': 'Reported that added descriptions did not isolate desired pictures; final retrieval not established.',
-    'community-162522212': 'Poster reported browser Find worked for locating an album; target-photo retrieval not established.',
-    'reddit-1i06lg2': 'Poster reported quoted screenshot-text refinement worked; no independently observed task.',
-    'pixls-39727': 'Poster reported that correcting folder scope gave expected results in another photo-management product.',
-    'community-128230954': 'Poster marked album-title-plus-term suggestion as an answer; independent task verification unavailable.',
-}
-
-
-def evidence_for(finding: dict, records):
-    """Return only IDs actually available in current snapshot."""
-    return records[records.record_id.isin(finding['ids'])]
-
-
-def validate_editorial_ids(records) -> list[str]:
-    ids = set(records.record_id)
-    used = {i for f in FINDINGS for i in f['ids'] + f['counter_ids']}
-    used |= {i for _, _, _, refs in QUESTIONS for i in refs}
-    return sorted(used - ids)
+def validate_editorial_ids(records:pd.DataFrame)->list[str]:
+ ids=set(records.case_id)
+ used={case for finding in FINDINGS for case in finding['supporting_ids']+finding['contradictory_ids']}
+ used|={case for _,_,_,refs in QUESTIONS for case in refs}
+ return sorted(used-ids)

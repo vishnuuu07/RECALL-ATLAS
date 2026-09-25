@@ -32,11 +32,20 @@ def source_chart(frame:pd.DataFrame):
     for bar,v in zip(b,counts.values):ax.text(v+.15,bar.get_y()+bar.get_height()/2,str(v),va='center',weight='bold',color=INK)
     fig.tight_layout(pad=1.2);return fig
 
+def category_chart(frame:pd.DataFrame,column:str,title:str,max_items:int=7):
+    values=frame[column].fillna('Not established').astype(str)
+    counts=values.value_counts().head(max_items).sort_values()
+    fig,ax=_figure(8,max(3.0,len(counts)*.52+1.15)); y=np.arange(len(counts));bars=ax.barh(y,counts.values,color=TEAL,height=.58)
+    labels=[label if len(label)<=42 else label[:39]+'…' for label in counts.index]
+    ax.set_yticks(y,labels=labels);ax.set_xlim(0,max(counts.values)*1.18 if len(counts) else 1);ax.set_xticks([]);ax.set_title(title,loc='left',fontsize=12,color=INK,weight='bold',pad=10)
+    for bar,value in zip(bars,counts.values):ax.text(value+.1,bar.get_y()+bar.get_height()/2,str(value),va='center',color=INK,weight='bold')
+    fig.tight_layout(pad=1.2);return fig
+
 def themes_chart(stats:pd.DataFrame):
     vals=stats.sort_values('records',ascending=True)
     fig,ax=_figure(9,max(3.6,len(vals)*.6+1));y=np.arange(len(vals));bars=ax.barh(y,vals.records,color=TEAL,height=.60)
     ax.set_yticks(y,labels=vals.label); ax.set_xlim(0,max(vals.records)*1.17 if len(vals) else 1)
-    ax.set_xlabel('Source-backed records (multi-label; themes overlap)',fontsize=9,color=MUTED)
+    ax.set_xlabel('Mapped Retrieval Cases (multi-label; themes overlap)',fontsize=9,color=MUTED)
     ax.grid(axis='x',color=GRID,zorder=0);ax.set_axisbelow(True)
     for bar,v in zip(bars,vals.records):ax.text(v+.1,bar.get_y()+bar.get_height()/2,str(v),va='center',color=INK,weight='bold')
     fig.tight_layout(pad=1.2);return fig

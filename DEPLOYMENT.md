@@ -2,7 +2,7 @@
 
 ## Pre-flight
 
-Run these commands from the repository root. They verify the fixed 24-record snapshot, manifest hash, research evidence references and the absence of credential patterns in the public SQLite file.
+Run these commands from the repository root. They verify the 40-case consolidated snapshot, manifest hash, Retrieval Case references and the absence of credential patterns or source URLs in the public SQLite file.
 
 ```powershell
 py -3.12 -m venv .venv
@@ -31,7 +31,7 @@ If GitHub prompts for authentication, complete it outside the repository. Do not
 2. Select **Create app**, then choose `vishnuuu07/RECALL-ATLAS`, branch `master`, and main file path `app.py`.
 3. Leave the advanced secrets field empty. Community Cloud will use `runtime.txt`, `requirements.txt` and `.streamlit/config.toml` from the repository.
 4. Deploy, wait for the build to complete, and open `https://recall-atlas.streamlit.app/` in a fresh browser session.
-5. Confirm the overview shows 24 raw records, 23 relevant signals, 12 evidence-rich episodes and four source categories. Exercise all four pages (Overview, Explore evidence, Opportunities and Methodology), one evidence filter, a source link and one CSV export. The Overview must show its four Matplotlib charts without Plotly/module errors or raw `NULL`/debug output.
+5. Confirm the overview shows 40 consolidated Retrieval Cases, 20 imported structured cases and four duplicate episodes merged. Exercise all four pages (Overview, Explore evidence, Opportunities and Methodology), one evidence filter and one CSV export. Confirm no source links, platform labels or external redirects appear. The Overview must show its six Matplotlib charts without Plotly/module errors or raw `NULL`/debug output.
 6. Record verification only after that public check succeeds.
 
 The expected public URL is `https://recall-atlas.streamlit.app/`; do not treat it as verified until the deployed revision has passed the fresh-browser check.

@@ -14,6 +14,7 @@ from pipeline.extract import enrich
 from pipeline.audit import validate
 from pipeline.aggregate import questions,themes,hypotheses
 from pipeline.publish import publish
+from pipeline.workbook_import import import_workbook,overlap_report
 from recall_atlas.metrics import funnel
 
 def main():
@@ -45,10 +46,13 @@ def main():
   model=f'not executed ({type(exc).__name__})'
   for r in records:r['semantic_cluster']=None
  evidence=pd.DataFrame(records); theme_df=themes(evidence); question_df=questions(evidence); hypothesis_df=hypotheses(theme_df); funnel_df=funnel(evidence,len(raw))
+ imported_cases,consolidated_cases,overlap_audit,workbook_meta=import_workbook(evidence,ROOT/'data/raw')
  corrections=int((evidence.classification_correction!='No change').sum())
- meta={'dataset_version':'0.2.0','schema_version':'1.1','pipeline_version':'0.2.0','collection_timestamp':datetime.now(timezone.utc).isoformat(),'processing_timestamp':datetime.now(timezone.utc).isoformat(),'raw_record_count':len(raw),'duplicates_removed':removed,'unique_record_count':len(records),'source_counts':evidence.source_platform.value_counts().to_dict(),'classification_correction_count':corrections,'ai_model_version':model,'ai_processing':'Deterministic, audit-preserving evidence classification and taxonomy; offline pretrained sentence embeddings + KMeans when model execution succeeds; no LLM extraction.','audit_status':'Automated provenance/schema/deduplication/reconciliation checks passed. Original and corrected labels are retained; independent human-label accuracy is unmeasured.'}
- publish(evidence,theme_df,question_df,hypothesis_df,funnel_df,meta)
+ meta={'dataset_version':'0.4.0','schema_version':'1.2','pipeline_version':'0.4.0-workbook-import','collection_timestamp':datetime.now(timezone.utc).isoformat(),'processing_timestamp':datetime.now(timezone.utc).isoformat(),'raw_record_count':len(raw),'duplicates_removed':removed,'unique_record_count':len(records),'classification_correction_count':corrections,'ai_model_version':model,'ai_processing':'Deterministic, audit-preserving evidence classification and taxonomy; offline pretrained sentence embeddings + KMeans when model execution succeeds; no LLM extraction.','audit_status':'Automated provenance/schema/deduplication/reconciliation checks passed. Original and corrected labels are retained; independent human-label accuracy is unmeasured. Public views omit source links and platform identifiers.'}
+ meta.update(workbook_meta)
+ publish(consolidated_cases,theme_df,question_df,hypothesis_df,funnel_df,meta,{'imported_retrieval_cases':imported_cases,'retrieval_cases':consolidated_cases,'case_overlap_audit':overlap_audit})
  out=ROOT/'outputs';out.mkdir(exist_ok=True);theme_df.to_csv(out/'findings.csv',index=False);question_df.to_csv(out/'research_questions.csv',index=False);hypothesis_df.to_csv(out/'hypothesis_matrix.csv',index=False)
- evidence.groupby('source_platform').agg(records=('record_id','count'),relevant=('relevance',lambda x:int(x.isin(['DIRECT','RELATED']).sum())),rich=('evidence_depth',lambda x:int(x.isin(['E1','E2']).sum())),median_excerpt_chars=('public_excerpt',lambda x:int(x.str.len().median()))).reset_index().to_csv(out/'source_health.csv',index=False)
+ consolidated_cases.groupby('record_kind').agg(records=('case_id','count'),recorded_outcomes=('outcome_classification',lambda x:int(x.str.contains('Found',case=False,na=False).sum()))).reset_index().to_csv(out/'source_health.csv',index=False)
+ (out/'duplicate_overlap_report.md').write_text(overlap_report(overlap_audit,workbook_meta),encoding='utf-8')
  print(json.dumps(meta,indent=2))
 if __name__=='__main__':main()
