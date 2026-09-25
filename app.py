@@ -1,4 +1,4 @@
-"""Recall Atlas v0.4 — evidence-first public research explorer.
+"""Recall Atlas v0.5 — direct, evidence-linked Part 1 answers.
 
 Runs wholly from a local, versioned SQLite snapshot built from the supplied
 70 source-linked account rows. No network access, API keys or LLM calls at runtime.
@@ -8,6 +8,7 @@ import html
 import json
 import sqlite3
 from collections import Counter
+from recall_atlas.assignment_answers import QUESTIONS, CASE_LENSES, lens_counts, relevant_records, validate_mappings
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -24,7 +25,7 @@ st.set_page_config(page_title='Recall Atlas | Retrieval Research',page_icon='◌
 st.markdown('''<style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap');
 .stApp{background:#faf9f5;color:#1e3840;font-family:'DM Sans',sans-serif}
-.block-container{max-width:1360px!important;padding:1.25rem 2.1rem 3.4rem!important}
+.block-container{max-width:1540px!important;width:94%!important;padding:1.1rem 1.4rem 3.2rem!important}
 h1,h2,h3{font-family:Fraunces,Georgia,serif!important;color:#1e3840!important;letter-spacing:-.015em}
 h1{font-size:2.2rem!important;line-height:1.15!important}h2{font-size:1.5rem!important}h3{font-size:1.2rem!important}
 [data-testid="stSidebar"]{background:#1e3840}[data-testid="stSidebar"] *{color:#f6f7f1!important}
@@ -42,6 +43,15 @@ h1{font-size:2.2rem!important;line-height:1.15!important}h2{font-size:1.5rem!imp
 [data-testid="stDataFrame"]{border:1px solid #dce4e1;border-radius:8px}
 [data-testid="stHorizontalBlock"]{align-items:stretch}
 footer{color:#60716e}small{font-size:.86rem}
+.qa-card{background:#ffffff;border:1px solid #d9e5df;border-radius:12px;padding:1.05rem 1.25rem;margin:.3rem 0 .65rem;min-height:174px}
+.qa-card strong{display:block;font:700 1.15rem Fraunces,Georgia,serif;color:#1e3840;margin:.3rem 0 .55rem}
+.qa-card p{margin:.32rem 0;color:#304b50;font-size:1rem;line-height:1.48}
+.qa-card small{color:#577079;font-size:.84rem}
+.qa-evidence{background:#eef5f1;border-left:4px solid #367368;padding:.75rem 1rem;border-radius:5px;font-size:.96rem}
+.sectionline{border-top:1px solid #dce5df;margin:1.2rem 0}
+[data-testid="stMarkdownContainer"] p{line-height:1.5}
+[data-testid="stDataFrame"]{font-size:1rem!important}
+
 @media(max-width:750px){.block-container{padding:.8rem .7rem 2rem!important}.hero{padding:1rem}.hero h1{font-size:1.7rem!important}}
 </style>''',unsafe_allow_html=True)
 
@@ -56,13 +66,14 @@ def load():
     return cases,meta,findings
 
 cases,meta,findings=load()
-NAV=['Overview','Explore evidence','Opportunities','Methodology']
+validate_mappings(set(cases.case_id))
+NAV=['Overview','Research answers','Explore evidence','Opportunities','Methodology']
 with st.sidebar:
     st.markdown('### RECALL ATLAS')
     st.caption('Vague-memory photo retrieval · Evidence explorer')
     page=st.radio('Navigate',NAV,label_visibility='collapsed')
     st.divider()
-    st.caption('70 source-case rows · 60 linked discussion URLs')
+    st.caption(f'{len(cases)} source-case rows · {cases.source_url.nunique()} linked discussions')
     st.caption('Independent research. Not affiliated with Google.')
 
 
@@ -109,44 +120,91 @@ def case_box(r,expanded=False):
         st.caption('Case focus: '+r.case_focus+' · Analyst tags: '+(', '.join(r.tags) if r.tags else 'No tag assigned'))
         if r.source_excerpt:
             st.caption('Source excerpt/supplied account summary: '+r.source_excerpt)
-        st.link_button('Open supplied original discussion',r.source_url)
+        st.link_button('Open original discussion for '+r.case_id+' ↗',r.source_url)
         st.caption('Structured source-case summary; not a verbatim interview transcript. Link accessibility not independently rechecked.')
 
 def download(label,df,name):
     st.download_button(label,df.to_csv(index=False).encode('utf-8-sig'),file_name=name,mime='text/csv')
 
+def question_card(q):
+    st.markdown(f'<div class="qa-card"><div class="eyebrow">{escape(q["id"])} · ASSIGNMENT QUESTION</div><strong>{escape(q["title"])}</strong><p>{escape(q["short"])}</p><small>Examples: {escape(", ".join(q["ids"][:4]))} · Open Research answers for sources and boundaries.</small></div>',unsafe_allow_html=True)
+
+
+def answer_detail(q,expanded_evidence=False):
+    st.markdown(f'### {q["id"]}. {q["title"]}')
+    st.markdown(f'<div class="qa-evidence"><b>Answer from the recorded cases</b><br>{escape(q["answer"])}</div>',unsafe_allow_html=True)
+    if q['lens']:
+        left,right=st.columns([1,1.07],gap='large')
+        with left:
+            st.markdown('**Recorded case examples**')
+            for _,r in relevant_records(q,cases).head(5).iterrows():
+                st.markdown(f'**{escape(r.case_id)}** — {escape(r.retrieval_goal)}')
+            st.caption('Source-linked rows; a case can support several answers.')
+        with right:
+            st.markdown('**Evidence lens — coded case rows**')
+            bar(lens_counts(q['lens'],set(cases.case_id)),'question lens',width=7,height=3.4)
+            st.caption('Non-exclusive, manually defined codes within the memory-led subset; not Google Photos prevalence.')
+    else:
+        st.markdown('**Illustrative source-backed records**')
+        st.write(', '.join(q['ids']))
+    st.caption('**Boundary:** '+q['limit'])
+    with st.expander(f'Inspect {q["id"]} source accounts ({len(q["ids"])} mapped examples)',expanded=expanded_evidence):
+        st.caption('Source-case summaries, not verbatim interview quotations. Original URLs may need independent rechecking.')
+        for _,r in relevant_records(q,cases).iterrows():
+            st.markdown(f'**{escape(r.case_id)} — {escape(r.title)}**')
+            st.write('**Goal:** '+r.retrieval_goal)
+            st.write('**Recorded action:** '+r.initial_action)
+            st.write('**Reported outcome:** '+r.outcome)
+            st.link_button('Open '+r.case_id+' source for '+q['id']+' ↗',r.source_url)
+            st.divider()
+    st.divider()
+
+
 if page=='Overview':
-    hero('Research intelligence · local and inspectable','70 accounts. Four distinct retrieval questions.',
-         'A targeted source-linked case collection: what people recall, try, and report next. Counts describe this collection, not all Google Photos users.')
-    metrics([(len(cases),'Source-case rows'),(cases.source_url.nunique(),'Distinct discussion URLs'),
-             ((cases.case_focus=='Memory-led account').sum(),'Memory-led case coding'),(len(findings),'Research directions')])
-    st.markdown('### What is in this collection?')
-    left,right=st.columns(2,gap='large')
+    hero('Research intelligence · fixed local evidence','Why does a remembered photo remain hard to retrieve?',
+         'Direct answers to the assignment, recorded behaviours, and distinct problems to test. This selected public-case collection is directional—not a user-population survey.')
+    metrics([(len(cases),'Source-case rows'),(int((cases.case_focus=='Memory-led account').sum()),'Memory-led cases'),
+             (cases.source_url.nunique(),'Distinct discussion URLs'),(len(findings),'Problem directions')])
+    st.markdown('## The four questions in the assignment — answered')
+    st.caption('These are source-grounded observations; open Research answers for supporting cases, charts, and what the data cannot establish.')
+    qa=st.columns(2,gap='large')
+    for i,q in enumerate(QUESTIONS[:4]):
+        with qa[i%2]:question_card(q)
+    st.markdown('## The problems differ — so their solutions may differ')
+    st.caption('Analyst-coded coverage in the 70 source-case rows. Codes overlap; these are not product failure rates.')
+    counts={f['title']:count_tag(f['tag']) for f in findings}
+    left,right=st.columns([1.1,.9],gap='large')
     with left:
-        st.markdown('**Source composition**')
-        bar(cases.source_platform.value_counts().to_dict(),'sources',height=2.35)
+        bar({k if len(k)<46 else k[:42]+'…':v for k,v in counts.items()},'directions',width=8,height=3.65)
     with right:
-        st.markdown('**Research scope of coded case rows**')
-        bar(cases.case_focus.value_counts().to_dict(),'scope',height=2.45,color='#4b8378')
-    st.markdown('### Four evidence-led questions worth testing')
-    cols=st.columns(2,gap='medium')
-    for i,f in enumerate(findings):
-        n=count_tag(f['tag'])
-        with cols[i%2]:
-            st.markdown(f'<div class="insight"><div class="eyebrow">{escape(f["id"])} · {n} coded case rows</div><h3>{escape(f["title"])}</h3><p>{escape(f["observed"])}</p><p style="color:#556971;font-size:.88rem"><b>Qualifying evidence:</b> {escape(f["qualification"])}</p></div>',unsafe_allow_html=True)
-    st.markdown('### Compare the reported behaviours')
-    a,b=st.columns(2,gap='large')
-    with a:
-        st.markdown('**Theme coverage (multi-label codes)**')
-        bar({k:count_tag(k) for k in ['Collection / scope','Literal text / file cue','Candidate → surrounding context','Related-image clue']},'themes',height=3.25)
-        st.caption('A case may be assigned more than one analyst-defined theme. These counts are not a popularity ranking.')
-    with b:
-        st.markdown('**Source-reported resolution category**')
-        bar(cases.outcome_group.value_counts().to_dict(),'reported outcomes',height=3.25,color=GOLD)
-        st.caption('"Reported target/route found" includes a successfully found navigation route, not necessarily the target asset. This is not a verified retrieval success rate.')
-    st.markdown('### The actual research handoff')
-    st.write('Start with a known target and reproduce the current flow. Compare **collection-scoped search**, **literal-text expectation**, and **candidate-to-event navigation** against existing features before choosing one narrow MVP. First rule out missing-account or backup issues.')
-    download('Export the complete case table',cases.drop(columns=['tags']), 'recall_atlas_70_cases.csv')
+        st.markdown('**Three concrete contrasts**')
+        st.markdown('**Collection scope:** S32 can identify the correct album but has trouble locating a specific image inside it.')
+        st.markdown('**Literal clue:** S30 has an exact filename yet does not confirm finding that file.')
+        st.markdown('**Related candidate:** S23 reports reaching same-day images after changing result sorting—an existing recovery route.')
+        st.info('An apparent missing result is a separate diagnosis: confirm that the asset exists in the right account before calling it a retrieval failure.')
+    st.markdown('## How much of the evidence is directly in scope?')
+    c1,c2=st.columns(2,gap='large')
+    with c1:
+        st.markdown('**Case selection**')
+        bar(cases.case_focus.value_counts().to_dict(),'scope',height=3.1)
+    with c2:
+        st.markdown('**Source composition**')
+        bar(cases.source_platform.value_counts().to_dict(),'sources',height=2.75)
+    st.caption('70 structured cases span 60 supplied discussion URLs; the majority are Reddit. Cases may share a discussion and are not independent interview participants.')
+    st.markdown('### What this research changes')
+    st.write('**We should not build a generic AI photo chatbot yet.** The cases suggest at least three testable bottlenecks—expressing remembered context, applying exact clues, and progressing from a related result to the target. Interview tasks must establish which mechanism fails in a reproducible retrieval attempt.')
+    st.caption('AI-method boundary: the previous 24-record corpus underwent Sentence Transformer/KMeans processing; the 70-case expansion includes a separately executed offline TF-IDF/SVD/KMeans exploratory pass. Final labels and assignment answers are human-defined evidence mappings, not validated model predictions.')
+    download('Export source-case table',cases.drop(columns=['tags']), 'recall_atlas_70_cases.csv')
+
+elif page=='Research answers':
+    hero('Direct assignment coverage · source-linked answers','What do people remember, forget, search—and do next?',
+         'The four questions from Part 1 are answered first. Four further questions compare failures, workarounds and research gaps. Every assertion below points to recorded case IDs.')
+    metrics([(4,'Original brief questions'),(8,'Evidence-mapped questions'),(29,'Memory-led case codes'),(60,'Distinct linked discussions')])
+    st.warning('Reading rule: selected source cases are not representative of all users. Some fields are missing, and Q&A reconstructions are not independent interview transcripts.')
+    for q in QUESTIONS:answer_detail(q)
+    st.markdown('### Export question-to-evidence map')
+    qdf=pd.DataFrame([{'question_id':q['id'],'question':q['title'],'answer':q['answer'],'example_case_ids':', '.join(q['ids']),'boundary':q['limit']} for q in QUESTIONS])
+    download('Export all research answers',qdf,'recall_atlas_assignment_answers.csv')
 
 elif page=='Explore evidence':
     hero('Every statement is traceable','Inspect the account before accepting the theme.',
@@ -204,20 +262,19 @@ else:
     st.markdown('### Where the source rows came from')
     st.dataframe(pd.DataFrame([{'Source':k,'Case rows':v} for k,v in meta['source_distribution'].items()]),hide_index=True,use_container_width=True)
     st.warning('Links were supplied in the workbook but have not all been independently rechecked for accessibility. Source coverage is mostly Reddit; case counts are descriptive, not representative.')
-    st.markdown('### Research questions: what this evidence can and cannot answer')
-    qlist=[
-      ('What old visual assets are discussed?','Photos, screenshots, videos, albums and related visual assets are described. Case selection prevents a population-frequency claim.','S02, S04, S19, S32'),
-      ('What is remembered?','Accounts contain explicit people, object, approximate period, text, location and collection clues.','S01, S02, S03, S04, S08'),
-      ('What is forgotten?','Some disclose a missing date, filename or indexing detail; others omit this information. Missing descriptions are not evidence of forgetting.','S01, S02, S04, S21'),
-      ('How do people first search?','Examples include descriptive phrases, exact terms, date search, album browsing, and using a related image. Reconstructed prompts are not original spoken interviews.','S02, S04, S23, S30'),
-      ('What happens after an unsuccessful attempt?','Some report chronological browsing, quoted text, mode-switching or another navigation route. Many end states remain unknown.','S02, S04, S20, S23'),
-      ('Which failure cause is proven?','None by case narratives alone. Check the target exists, account scope and actual search behaviour in consented tasks.','S18, S19, S58'),
-    ]
-    for question,answer,ids in qlist:
-        with st.expander(question):st.write(answer);st.caption('Illustrative source IDs: '+ids)
+    st.markdown('### Assignment-question coverage')
+    st.write('All four original questions and four additional behavioural questions have direct answers, evidence IDs, charts or explicit limitations under **Research answers** in the navigation. They are not hidden behind this technical appendix.')
+    st.dataframe(pd.DataFrame([{'ID':q['id'],'Research question':q['title'],'Mapped cases':len(q['ids'])} for q in QUESTIONS]),hide_index=True,use_container_width=True)
     st.markdown('### Research process and next step')
     st.write('Source-linked account → structured retrieval fields → cautious analyst theme → compare successful and unsuccessful routes → reproduce task with participant → choose one tested intervention.')
-    st.write('The earlier 24-record pipeline reports an offline Sentence Transformer/KMeans stage. This 70-case extension is explicitly a structured, manually mapped import; no fresh model run is claimed for it.')
+    st.write('The earlier 24-record pipeline reported Sentence Transformer/KMeans processing. For this 70-case edition an offline exploratory TF-IDF → TruncatedSVD → KMeans model was also executed; the manual case themes and evidence answers are distinct from its unvalidated clusters.')
+    ml_file=ROOT/'outputs'/'offline_ml_analysis.json'
+    if ml_file.exists():
+        ml=json.loads(ml_file.read_text(encoding='utf8'))
+        st.caption(f'Offline ML pass: {ml["records"]} case texts · k={ml["k"]} · silhouette={ml["silhouette_score"]} (weak cluster separation; NOT classifier accuracy).')
+        with st.expander('Inspect exploratory machine-learning clusters (not research conclusions)'):
+            st.dataframe(pd.DataFrame([{'Cluster':x['cluster_id'],'Rows':x['rows'],'Terms':', '.join(x['top_terms'][:7]),'Case IDs':', '.join(x['case_ids'])} for x in ml['clusters']]),use_container_width=True,hide_index=True)
+    else:st.warning('70-case offline ML analysis not present; run scripts/analyze_70_semantics.py with requirements-research.txt to reproduce it.')
     st.markdown('### Snapshot validation')
     st.json({k:v for k,v in meta.items() if k not in {'theme_counts'}},expanded=False)
     st.caption('Independent research project · not affiliated with Google. No personal images or private libraries are included in this dashboard.')

@@ -1,7 +1,15 @@
+"""Validate the current 70-case local public dataset, not the historical archive."""
+import json,sqlite3
 from pathlib import Path
-import json,sqlite3,sys
-root=Path(__file__).resolve().parents[1]; db=root/'data/public/recall_atlas_public.sqlite'; manifest=json.loads((root/'data/manifests/public_snapshot_manifest.json').read_text())
-con=sqlite3.connect(db); count=con.execute('select count(*) from retrieval_cases').fetchone()[0]; missing=con.execute("select count(*) from retrieval_cases where case_id is null or original_account='' ").fetchone()[0]
-assert count==manifest['public_record_count'],(count,manifest['public_record_count']);assert not missing,missing;assert con.execute("select count(*) from sqlite_master where name='evidence_fts'").fetchone()[0]==1
-assert 'source_url' not in {row[1] for row in con.execute('pragma table_info(evidence)')}
-print(f'validated {count} consolidated Retrieval Cases; snapshot integrity OK')
+ROOT=Path(__file__).resolve().parents[1]
+DB=ROOT/'data/public/recall_atlas_70_cases.sqlite'
+m=json.loads((ROOT/'data/manifests/retrieval_cases_70_manifest.json').read_text(encoding='utf8'))
+with sqlite3.connect(f'file:{DB.as_posix()}?mode=ro',uri=True) as c:
+ n=c.execute('SELECT COUNT(*) FROM cases').fetchone()[0]
+ ids=c.execute('SELECT COUNT(DISTINCT case_id) FROM cases').fetchone()[0]
+ fts=c.execute('SELECT COUNT(*) FROM cases_fts').fetchone()[0]
+ distinct=c.execute('SELECT COUNT(DISTINCT source_url) FROM cases').fetchone()[0]
+ assert (n,ids,fts,distinct)==(70,70,70,60)
+ assert n==m['case_rows'] and distinct==m['distinct_linked_discussions']
+ assert c.execute('SELECT COUNT(*) FROM cases WHERE retrieval_goal IS NULL OR trim(retrieval_goal)=""').fetchone()[0]==0
+ print(f'PASS current data: {n} rows, {distinct} source URLs, FTS index and required goals')

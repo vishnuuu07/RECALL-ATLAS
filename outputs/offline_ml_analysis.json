@@ -1,0 +1,168 @@
+{
+  "snapshot": "70-case fixed local corpus",
+  "status": "executed",
+  "features": "TF-IDF unigrams/bigrams \u2192 TruncatedSVD \u2192 KMeans",
+  "purpose": "unsupervised similarity exploration, not verified failure labels",
+  "model_accuracy": "unmeasured",
+  "random_seed": 42,
+  "k": 5,
+  "records": 70,
+  "silhouette_score": 0.075,
+  "clusters": [
+    {
+      "cluster_id": 0,
+      "rows": 9,
+      "case_ids": [
+        "S05",
+        "S07",
+        "S09",
+        "S10",
+        "S12",
+        "S13",
+        "S14",
+        "S15",
+        "S33"
+      ],
+      "top_terms": [
+        "object",
+        "photo",
+        "category",
+        "unresolved",
+        "object category",
+        "revisit",
+        "seek",
+        "retrieval",
+        "compare"
+      ]
+    },
+    {
+      "cluster_id": 1,
+      "rows": 11,
+      "case_ids": [
+        "S17",
+        "S25",
+        "S27",
+        "S37",
+        "S38",
+        "S39",
+        "S41",
+        "S46",
+        "S62",
+        "S63",
+        "S69"
+      ],
+      "top_terms": [
+        "location",
+        "photos",
+        "metadata",
+        "map",
+        "search",
+        "photos location",
+        "london",
+        "place",
+        "asked"
+      ]
+    },
+    {
+      "cluster_id": 2,
+      "rows": 12,
+      "case_ids": [
+        "S01",
+        "S32",
+        "S36",
+        "S40",
+        "S47",
+        "S48",
+        "S49",
+        "S50",
+        "S51",
+        "S52",
+        "S53",
+        "S70"
+      ],
+      "top_terms": [
+        "album",
+        "face",
+        "locate",
+        "albums",
+        "photograph",
+        "list",
+        "known",
+        "opened",
+        "photos"
+      ]
+    },
+    {
+      "cluster_id": 3,
+      "rows": 19,
+      "case_ids": [
+        "S03",
+        "S04",
+        "S06",
+        "S11",
+        "S16",
+        "S24",
+        "S28",
+        "S31",
+        "S34",
+        "S35",
+        "S43",
+        "S44",
+        "S45",
+        "S55",
+        "S64",
+        "S65",
+        "S66",
+        "S67",
+        "S68"
+      ],
+      "top_terms": [
+        "screenshot",
+        "reported",
+        "text",
+        "search",
+        "results",
+        "commenter",
+        "word",
+        "query",
+        "searched"
+      ]
+    },
+    {
+      "cluster_id": 4,
+      "rows": 19,
+      "case_ids": [
+        "S02",
+        "S08",
+        "S18",
+        "S19",
+        "S20",
+        "S21",
+        "S22",
+        "S23",
+        "S26",
+        "S29",
+        "S30",
+        "S42",
+        "S54",
+        "S56",
+        "S57",
+        "S58",
+        "S59",
+        "S60",
+        "S61"
+      ],
+      "top_terms": [
+        "video",
+        "search",
+        "dog",
+        "old",
+        "photos",
+        "searched",
+        "absent",
+        "images",
+        "google"
+      ]
+    }
+  ]
+}

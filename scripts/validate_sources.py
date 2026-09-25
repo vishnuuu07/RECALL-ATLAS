@@ -1,5 +1,13 @@
+"""Validate locally stored source provenance; does not claim live URL accessibility."""
 from pathlib import Path
 import sqlite3
-db=Path(__file__).resolve().parents[1]/'data/public/recall_atlas_public.sqlite';con=sqlite3.connect(db)
-columns={row[1] for row in con.execute('pragma table_info(evidence)')};assert 'source_url' not in columns
-bad=con.execute("select count(*) from evidence where source_platform != 'Retrieval Cases'").fetchone()[0];assert bad==0;print('public snapshot is source-neutral')
+from urllib.parse import urlparse
+DB=Path(__file__).resolve().parents[1]/'data/public/recall_atlas_70_cases.sqlite'
+with sqlite3.connect(f'file:{DB.as_posix()}?mode=ro',uri=True) as c:
+ rows=c.execute('SELECT case_id,source_platform,source_url FROM cases').fetchall()
+ assert len(rows)==70
+ for cid,platform,url in rows:
+  u=urlparse(url)
+  assert u.scheme=='https' and u.hostname and u.path,(cid,url)
+  assert ('reddit.com' in u.hostname or u.hostname=='support.google.com'),(cid,url)
+ print(f'PASS source format: {len(rows)} case URLs; live accessibility NOT independently checked')
