@@ -1,0 +1,92 @@
+{
+  "findings": [
+    {
+      "id": "F1",
+      "title": "Knowing the collection is not the same as searching within it",
+      "tag": "Collection / scope",
+      "observed": "Some account holders knew the event, album or cohort but described global results or an album that did not jump to the intended photo.",
+      "examples": [
+        "S08",
+        "S32",
+        "S47"
+      ],
+      "qualification": "S23 reports an existing way to navigate from a known image to its day. Do not imply that no contextual navigation feature exists.",
+      "question": "Ask someone to find an item in a known album or trip. Compare their first query, search scope, result inspection and next action.",
+      "metric": "Verified retrieval within the intended collection; steps and time to target."
+    },
+    {
+      "id": "F2",
+      "title": "Exact words or filenames are not always treated as exact clues",
+      "tag": "Literal text / file cue",
+      "observed": "Cases describe queries for screenshot text or a filename that returned conceptually related or date-related results rather than the expected literal match.",
+      "examples": [
+        "S04",
+        "S30",
+        "S43"
+      ],
+      "qualification": "S04 and S35 describe successful quoted-term workarounds; test whether the capability is available and understood before inventing it.",
+      "question": "Give an existing screenshot containing a known literal phrase. Observe search wording, returned matches and whether the user discovers exact-text behavior.",
+      "metric": "Correct screenshot retrieval and number of reformulations."
+    },
+    {
+      "id": "F3",
+      "title": "A near match can still leave the intended memory out of reach",
+      "tag": "Candidate → surrounding context",
+      "observed": "Accounts describe locating a reference image or partial event set but needing another action to reach surrounding images.",
+      "examples": [
+        "S08",
+        "S23",
+        "S32"
+      ],
+      "qualification": "S23 reports a path that resolved navigation, so this may be a discoverability/flow problem rather than a missing capability.",
+      "question": "After a user finds a photo from the right day, observe how they navigate to a different image from the same event.",
+      "metric": "Time from first relevant candidate to verified target; abandoned near misses."
+    },
+    {
+      "id": "F4",
+      "title": "Missing results need availability diagnosis before product blame",
+      "tag": "Asset availability / indexing diagnosis",
+      "observed": "Some reports describe entire periods or videos absent; the record alone cannot separate forgotten context from backup/account/indexing state.",
+      "examples": [
+        "S18",
+        "S19",
+        "S60"
+      ],
+      "qualification": "S26 found a known set through date search; S58 reported nothing was ultimately lost. These are not confirmed vague-memory failures.",
+      "question": "First establish that the intended asset exists in the selected account and collection, then reproduce any retrieval mismatch.",
+      "metric": "Share of attempted tasks with independently confirmed asset presence before retrieval diagnosis."
+    }
+  ],
+  "manifest": {
+    "dataset_version": "0.4",
+    "case_rows": 70,
+    "distinct_linked_discussions": 60,
+    "source_distribution": {
+      "Reddit": 58,
+      "Google Photos Community": 12
+    },
+    "case_focus_distribution": {
+      "Memory-led account": 29,
+      "Adjacent search/navigation": 29,
+      "Asset-availability diagnostic": 12
+    },
+    "outcome_groups": {
+      "Unresolved / not confirmed": 42,
+      "Reported target/route found": 15,
+      "Partial or workaround only": 13
+    },
+    "theme_counts": {
+      "Collection / scope": 14,
+      "Literal text / file cue": 12,
+      "Candidate → surrounding context": 6,
+      "Sparse / irrelevant results": 28,
+      "Asset availability / indexing diagnosis": 13,
+      "Related-image clue": 3,
+      "Reported successful route or workaround": 21
+    },
+    "source_urls": "Supplied by workbook; live accessibility has not been independently verified",
+    "case_unit": "A source-case row, not necessarily an independent person or discussion",
+    "analysis_boundary": "Editorial reconstructions are not transcript quotes or directly observed interviews",
+    "snapshot_sha256": "3a5b4ff7789870afd50ce90e43e421fffa21b4aeb7df04cd8835792f14f4115f"
+  }
+}

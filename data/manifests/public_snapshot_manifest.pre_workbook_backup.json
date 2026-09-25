@@ -1,0 +1,23 @@
+{
+  "dataset_version": "0.3.0",
+  "schema_version": "1.1",
+  "pipeline_version": "0.3.0-editorial",
+  "collection_timestamp": "2026-09-25T15:22:51.273146+00:00",
+  "processing_timestamp": "2026-09-25T15:22:51.273146+00:00",
+  "raw_record_count": 24,
+  "duplicates_removed": 0,
+  "unique_record_count": 24,
+  "source_counts": {
+    "Reddit": 12,
+    "Google Photos Community": 9,
+    "PIXLS.US photo-management forum": 2,
+    "Google Play Store": 1
+  },
+  "classification_correction_count": 15,
+  "ai_model_version": "sentence-transformers/all-MiniLM-L6-v2",
+  "ai_processing": "Deterministic, audit-preserving evidence classification and taxonomy; offline pretrained sentence embeddings + KMeans when model execution succeeds; no LLM extraction.",
+  "audit_status": "Automated provenance/schema/deduplication/reconciliation checks passed. Original and corrected labels are retained; independent human-label accuracy is unmeasured.",
+  "snapshot_sha256": "59d27413d1b752dc7cfbc9d65c264f77d645aa576450ef72ca0f1fdae3f206c8",
+  "public_record_count": 24,
+  "analytical_revision": "Research-question mappings and hypothesis descriptions repaired; 24 underlying evidence rows and classification labels unchanged."
+}

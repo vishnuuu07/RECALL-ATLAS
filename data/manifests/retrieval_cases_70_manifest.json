@@ -1,0 +1,32 @@
+{
+  "dataset_version": "0.4",
+  "case_rows": 70,
+  "distinct_linked_discussions": 60,
+  "source_distribution": {
+    "Reddit": 58,
+    "Google Photos Community": 12
+  },
+  "case_focus_distribution": {
+    "Memory-led account": 29,
+    "Adjacent search/navigation": 29,
+    "Asset-availability diagnostic": 12
+  },
+  "outcome_groups": {
+    "Unresolved / not confirmed": 42,
+    "Reported target/route found": 15,
+    "Partial or workaround only": 13
+  },
+  "theme_counts": {
+    "Collection / scope": 14,
+    "Literal text / file cue": 12,
+    "Candidate → surrounding context": 6,
+    "Sparse / irrelevant results": 28,
+    "Asset availability / indexing diagnosis": 13,
+    "Related-image clue": 3,
+    "Reported successful route or workaround": 21
+  },
+  "source_urls": "Supplied by workbook; live accessibility has not been independently verified",
+  "case_unit": "A source-case row, not necessarily an independent person or discussion",
+  "analysis_boundary": "Editorial reconstructions are not transcript quotes or directly observed interviews",
+  "snapshot_sha256": "3a5b4ff7789870afd50ce90e43e421fffa21b4aeb7df04cd8835792f14f4115f"
+}

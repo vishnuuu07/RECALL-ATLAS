@@ -4,9 +4,9 @@ An independent, evidence-linked research dashboard; not affiliated with Google.
 
 ## What the public app provides
 
-Four reviewer-oriented sections: **Overview**, **Explore evidence**, **Opportunities**, **Methodology**. The research sample contains 24 fixed public-source records, 23 deterministically coded DIRECT/RELATED signals and 12 E1/E2 coded records. Counts are *not* population estimates. Findings remain research hypotheses pending observed user tasks.
+Four reviewer-oriented sections: **Overview**, **Explore evidence**, **Opportunities**, **Methodology**. The live v0.4 view presents 70 structured, source-linked retrieval-case rows from the supplied workbook, linked to 60 distinct discussion URLs. A case row is not necessarily an independent person or discussion, and editorial reconstructions are not interview transcripts. Counts are *not* population estimates; findings remain research hypotheses pending observed user tasks.
 
-The app uses a local SQLite research snapshot, and does not fetch source websites or call models when a visitor opens it. It does not need `.env` or API keys.
+The app uses the local, read-only `data/public/recall_atlas_70_cases.sqlite` snapshot and does not fetch source websites or call models when a visitor opens it. It does not need `.env` or API keys. The prior 24-source-record / 40-consolidated-case pipeline snapshot remains in `recall_atlas_public.sqlite` with its manifest for lineage; it is not added to the v0.4 70-case headline because overlap has not been independently reconciled.
 
 ## Run locally
 
@@ -22,6 +22,7 @@ py -3.12 -m venv .venv
 
 ```powershell
 .\.venv\Scripts\python.exe -m pip install pytest
+.\.venv\Scripts\python.exe scripts/verify_retrieval_70.py
 .\.venv\Scripts\python.exe scripts/verify_submission.py
 .\.venv\Scripts\python.exe scripts/validate_data.py
 .\.venv\Scripts\python.exe scripts/validate_sources.py
@@ -36,4 +37,4 @@ Push to the existing GitHub repository and deploy `app.py` to Streamlit Communit
 
 ## Research boundary
 
-The corpus was deliberately enriched for retrieval complaints, is small and self-selected, and contains cross-product context. LLM structured extraction was not used; offline embedding + KMeans use is recorded by the processing manifest. Automated label corrections are not human audit. See `RESEARCH_TO_SOLUTION_HANDOFF.md` and `research/presentation_repair.md`.
+The v0.4 workbook collection was deliberately enriched for retrieval complaints, is small and self-selected, and contains cross-product context. Its source links were supplied with the workbook but have not all been independently rechecked for availability. It does not establish a retrieval-success rate, prevalence, causal failure mode, or a 70-person interview sample. The retained historical pipeline used offline embedding + KMeans as recorded by its processing manifest; no fresh model run is claimed for v0.4. See `RESEARCH_TO_SOLUTION_HANDOFF.md` and `research/presentation_repair.md`.
