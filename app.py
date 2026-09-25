@@ -128,7 +128,6 @@ if page=='Overview':
     with right:
         st.markdown('**Research scope of coded case rows**')
         bar(cases.case_focus.value_counts().to_dict(),'scope',height=2.45,color='#4b8378')
-    st.markdown('<div class="notice"><b>Read the units correctly:</b> 70 structured account rows link to 60 discussion URLs. Multiple rows can come from one thread, and these are not 70 participant interviews. Collection was deliberately retrieval-focused; counts do not estimate prevalence.</div>',unsafe_allow_html=True)
     st.markdown('### Four evidence-led questions worth testing')
     cols=st.columns(2,gap='medium')
     for i,f in enumerate(findings):
