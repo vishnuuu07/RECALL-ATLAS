@@ -1,0 +1,2 @@
+"""Compliant, resumable collection adapters."""
+
