@@ -1,4 +1,13 @@
-# Recall Atlas — research-to-solution handoff (Phase 2)
+# Recall Atlas — research-to-solution handoff (presentation repair, v0.3)
+
+## Executive research readout
+
+The available public sample supports **investigating**, not choosing, four separate problems: (1) applying remembered album/event context to a search; (2) expressing literal screenshot text and filenames rather than broad semantic terms; (3) moving from a useful candidate into a related time window; and (4) diagnosing sparse/irrelevant results before assuming the target or index is faulty. Source-backed examples include `reddit-1aju75m` (programme-specific campfire images), `reddit-1i06lg2` (quoted screenshot-text workaround), `reddit-1h09vho` (surrounding-day navigation request), and `reddit-1ov9y8d` (incomplete object results with contrary account reports).
+
+**Interpretation:** source reports show distinct possible intervention points, but cannot establish which one drives unsuccessful retrieval or whether current features solve it. Interview evidence and consented, observed retrieval tasks must select the problem. The public-facing dashboard now exposes these directions without fabricated quantitative confidence or a business-impact score.
+
+**Presentation/data repair:** the underlying 24 original evidence records, URLs and prior correction labels are preserved. The 22 research-question answers and four derived finding/hypothesis records are now mapped to specific IDs rather than automatically treating all 23 relevant records as answers to every question. No new collection has been claimed.
+
 
 ## Snapshot and interpretation boundary
 
@@ -42,7 +51,7 @@ Metrics: first-query precision; reformulation count; syntax/control discovery ra
 
 ### H3 — A relevant candidate may not provide a low-friction route to related photos from the same event/day
 
-Supporting records: `reddit-1h09vho`, `reddit-1fmvxd6`, `community-495705`.
+Supporting records: `reddit-1h09vho`, `reddit-1fmvxd6`. `community-495705` concerns month-level retrieval inside a child album and is relevant to collection scope, not direct evidence of candidate-to-timeline navigation.
 
 Observed mechanism: after imperfect search or a partial candidate, people estimate a date, browse month/year manually, or ask for a jump to the surrounding day. This is candidate-to-timeline navigation evidence; it does not show that every target is temporally adjacent or that a day view would solve the attempt.
 

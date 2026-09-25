@@ -1,10 +1,16 @@
-# RECALL ATLAS
+# RECALL ATLAS · Google Photos retrieval discovery
 
-An independent research dashboard for public evidence about vague-memory photo retrieval. It is not affiliated with Google.
+An independent, evidence-linked research dashboard; not affiliated with Google.
+
+## What the public app provides
+
+Four reviewer-oriented sections: **Overview**, **Explore evidence**, **Opportunities**, **Methodology**. The research sample contains 24 fixed public-source records, 23 deterministically coded DIRECT/RELATED signals and 12 E1/E2 coded records. Counts are *not* population estimates. Findings remain research hypotheses pending observed user tasks.
+
+The app uses a local SQLite research snapshot, and does not fetch source websites or call models when a visitor opens it. It does not need `.env` or API keys.
 
 ## Run locally
 
-Use Python 3.12:
+Create Python 3.12 environment and install runtime packages:
 
 ```powershell
 py -3.12 -m venv .venv
@@ -12,23 +18,22 @@ py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m streamlit run app.py
 ```
 
-The application reads only `data/public/recall_atlas_public.sqlite` and `data/manifests/public_snapshot_manifest.json`. It makes no collection, embedding, or model call on page load.
-
-## Verify the fixed public snapshot
+## Validate
 
 ```powershell
-.\.venv\Scripts\python.exe -m pip install -r requirements-research.txt
+.\.venv\Scripts\python.exe -m pip install pytest
 .\.venv\Scripts\python.exe scripts/verify_submission.py
 .\.venv\Scripts\python.exe scripts/validate_data.py
+.\.venv\Scripts\python.exe scripts/validate_sources.py
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 
-The reproducible Phase 2 snapshot contains the committed `data/raw/*_public_records.jsonl` inputs. `pipeline/run_pipeline.py` rebuilds only from those local files by default. Transient App Store collection is opt-in via `--include-app-store` and must not be used to recreate the fixed 24-record public snapshot.
+To refresh only the evidence-specific derived tables (not source records), use `python scripts/refresh_derived_analysis.py`. It recomputes the public manifest checksum. Heavy collection/embedding dependencies are separate in `requirements-research.txt`.
 
 ## Deploy
 
-Push the repository to GitHub, then create a Streamlit Community Cloud app using `app.py` and `requirements.txt`. No runtime secrets are required. Follow [DEPLOYMENT.md](DEPLOYMENT.md) and verify the assigned public URL after deployment.
+Push to the existing GitHub repository and deploy `app.py` to Streamlit Community Cloud. See `DEPLOYMENT.md`. No environment secrets are required. Confirm that the live site has four sections and visible Matplotlib charts in an incognito browser; a Python health check alone is insufficient.
 
-## Evidence boundary
+## Research boundary
 
-Public excerpts are anonymised and short. The corpus is targeted, self-selected secondary evidence—not product telemetry, an independent human-label study, or a population estimate. Review the source links and [research handoff](RESEARCH_TO_SOLUTION_HANDOFF.md) before interpreting findings.
+The corpus was deliberately enriched for retrieval complaints, is small and self-selected, and contains cross-product context. LLM structured extraction was not used; offline embedding + KMeans use is recorded by the processing manifest. Automated label corrections are not human audit. See `RESEARCH_TO_SOLUTION_HANDOFF.md` and `research/presentation_repair.md`.

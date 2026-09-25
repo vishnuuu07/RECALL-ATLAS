@@ -1,22 +1,29 @@
 import streamlit as st
 
-
-def inject_css() -> None:
-    st.markdown("""<style>
-    @import url('https://fonts.googleapis.com/css2?family=DM+Mono&family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600;700&display=swap');
-    .stApp { background:#f7f3ea; color:#11212b; font-family:Inter,sans-serif; }
-    h1,h2,h3 { font-family:Fraunces,Georgia,serif !important; color:#102b37; letter-spacing:-.025em; }
-    .block-container { max-width:1300px; padding-top:2.1rem; padding-bottom:4rem; }
-    [data-testid='stSidebar'] { background:#102b37; }
-    [data-testid='stSidebar'] * { color:#f6f2e9 !important; }
-    .hero { background:linear-gradient(115deg,#102b37 0%,#135a5d 74%,#d9a542 150%); padding:3rem; border-radius:22px; color:#f7f3ea; margin-bottom:1.6rem; }
-    .hero h1 { color:#fff8e8!important; font-size:3.3rem!important; margin:0!important; }
-    .eyebrow { font-family:'DM Mono',monospace; letter-spacing:.1em; text-transform:uppercase; font-size:.76rem; color:#55d0be; }
-    .metric { background:#fffdf8; border:1px solid #dfddd4; border-radius:14px; padding:1rem 1.15rem; min-height:108px; }
-    .metric .n { font:700 2rem Fraunces,serif; color:#0b6967; } .metric .l { font-size:.8rem; color:#52626b; }
-    .card { background:#fffdf8; border:1px solid #dfddd4; border-radius:14px; padding:1.2rem; margin:.55rem 0; }
-    .tag { display:inline-block; background:#dff2ed; border-radius:999px; color:#086861; padding:.18rem .55rem; font: .73rem 'DM Mono',monospace; margin:.12rem; }
-    .warning { border-left:4px solid #d88d2a; padding:.65rem 1rem; background:#fff0d7; border-radius:4px; }
-    .stDownloadButton button { border-radius:8px; border:1px solid #0b716d; color:#075f5b; }
-    </style>""", unsafe_allow_html=True)
-
+def inject_css():
+    st.markdown('''<style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap');
+    .stApp{background:#faf8f3;color:#19333d;font-family:'DM Sans',sans-serif}
+    .block-container{max-width:1260px!important;padding:1.1rem 2rem 3rem!important}
+    h1,h2,h3{font-family:Fraunces,Georgia,serif!important;letter-spacing:-.018em;color:#19333d!important}
+    h1{font-size:2.5rem!important;line-height:1.1!important}h2{font-size:1.55rem!important}h3{font-size:1.25rem!important}
+    p,li,[data-testid="stMarkdownContainer"]{font-size:1rem;line-height:1.48}
+    [data-testid='stSidebar']{background:#19333d}[data-testid='stSidebar'] *{color:#fbf9f3!important}
+    [data-testid='stSidebar'] [role='radiogroup'] label{font-size:.98rem!important;padding:.42rem .1rem}
+    .hero{background:linear-gradient(110deg,#19333d,#31695c);padding:1.55rem 1.9rem;border-radius:15px;color:#fff;margin-bottom:1.1rem}
+    .hero h1{color:#fff!important;margin:.27rem 0 .55rem!important;font-size:2.3rem!important;max-width:980px}
+    .hero p{color:#e9f1ed;max-width:950px;font-size:1rem;margin:0!important}
+    .eyebrow{color:#a7e0d0;font-size:.75rem;letter-spacing:.13em;text-transform:uppercase;font-weight:700}
+    .metric{background:white;border:1px solid #e1e4de;border-radius:12px;padding:.82rem 1rem;min-height:94px}
+    .metric .n{font:700 1.8rem Fraunces,Georgia,serif;color:#226e68}.metric .l{color:#56696a;font-size:.82rem}
+    .finding{background:white;border:1px solid #e3e5df;border-radius:11px;padding:1.05rem 1.25rem;margin:.5rem 0}
+    .finding h3{margin:.08rem 0 .42rem!important;font-size:1.16rem!important}
+    .finding p{margin:.15rem 0!important;font-size:.94rem;color:#30484d}
+    .finding .eyebrow{color:#287970;font-size:.68rem}
+    .notice{border-left:4px solid #bf873f;background:#fff1dc;border-radius:5px;padding:.8rem 1rem;margin:.6rem 0;font-size:.93rem}
+    [data-testid='stExpander']{background:white;border:1px solid #e3e5df;border-radius:8px}
+    [data-testid='stMetric']{background:white;border:1px solid #e3e5df;border-radius:10px;padding:12px}
+    .stDownloadButton button{border:1px solid #287970;border-radius:8px;color:#205c54}
+    footer{color:#617373}small{font-size:.85rem}
+    @media(max-width:720px){.block-container{padding:.8rem 1rem 2rem!important}.hero{padding:1.25rem}.hero h1{font-size:1.75rem!important}}
+    </style>''',unsafe_allow_html=True)

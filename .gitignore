@@ -6,3 +6,7 @@ data/raw/private/
 outputs/*-qa.png
 .streamlit/secrets.toml
 auth*.json
+.env
+.env.*
+!.env.example
+.reviewed-v03-staging/

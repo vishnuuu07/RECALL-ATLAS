@@ -15,27 +15,23 @@ py -3.12 -m venv .venv
 
 Do not run collection or `--include-app-store` before public submission. The app runs from the committed SQLite snapshot and requires no secrets.
 
-## GitHub manual authorisation
+## GitHub release target
 
-This local folder has been initialised as a Git repository, but no GitHub account, remote or token is configured. In an authenticated terminal, create an empty GitHub repository and run:
+The configured repository is `https://github.com/vishnuuu07/RECALL-ATLAS.git` and the deployment branch is `master`. Push the verified corrective release with:
 
 ```powershell
-git add .
-git commit -m "Prepare fixed Phase 2 public snapshot"
-git branch -M main
-git remote add origin https://github.com/<YOUR-ACCOUNT>/<YOUR-REPOSITORY>.git
-git push -u origin main
+git push origin master
 ```
 
-If GitHub prompts for authentication, complete it in the browser or use a credential manager/token outside this project. Do not place tokens in project files, Streamlit secrets or shell history.
+If GitHub prompts for authentication, complete it outside the repository. Do not place tokens in project files, Streamlit secrets or shell history.
 
 ## Streamlit Community Cloud manual authorisation
 
 1. Sign in at [share.streamlit.io](https://share.streamlit.io/) using the GitHub account that owns or can access the repository.
-2. Select **Create app**, then choose `<YOUR-ACCOUNT>/<YOUR-REPOSITORY>`, branch `main`, and main file path `app.py`.
+2. Select **Create app**, then choose `vishnuuu07/RECALL-ATLAS`, branch `master`, and main file path `app.py`.
 3. Leave the advanced secrets field empty. Community Cloud will use `runtime.txt`, `requirements.txt` and `.streamlit/config.toml` from the repository.
-4. Deploy, wait for the build to complete, and copy the assigned `https://<subdomain>.streamlit.app` URL.
-5. Open that URL in an unauthenticated browser session. Confirm the overview shows 24 raw records, 23 relevant signals, 12 evidence-rich episodes and four sources; then exercise all eight sections, an Evidence Explorer query, a source link and one CSV export.
-6. Record the actual assigned URL in the release/README only after that public check succeeds.
+4. Deploy, wait for the build to complete, and open `https://recall-atlas.streamlit.app/` in a fresh browser session.
+5. Confirm the overview shows 24 raw records, 23 relevant signals, 12 evidence-rich episodes and four source categories. Exercise all four pages (Overview, Explore evidence, Opportunities and Methodology), one evidence filter, a source link and one CSV export. The Overview must show its four Matplotlib charts without Plotly/module errors or raw `NULL`/debug output.
+6. Record verification only after that public check succeeds.
 
-The project currently has no public deployment URL because GitHub and Streamlit account authorisation are not available in this workspace.
+The expected public URL is `https://recall-atlas.streamlit.app/`; do not treat it as verified until the deployed revision has passed the fresh-browser check.
